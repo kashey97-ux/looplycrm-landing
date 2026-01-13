@@ -1,5 +1,5 @@
 export default function PrivacyPolicy() {
-  const effective = "January 13, 2026";
+  const lastUpdated = "January 13, 2026";
   const supportEmail = "support@looplycrm.com";
   const company = "Looply (LooplyCRM)";
 
@@ -7,7 +7,7 @@ export default function PrivacyPolicy() {
     <div className="card legal">
       <p className="pill">Privacy Policy</p>
       <h1>Privacy Policy</h1>
-      <p className="small">Effective date: {effective}</p>
+      <p className="small">Last updated: {lastUpdated}</p>
 
       <p>
         This Privacy Policy explains how {company} ("we", "us") collects, uses, and protects information when you use our

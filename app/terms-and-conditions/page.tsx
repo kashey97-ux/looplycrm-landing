@@ -1,22 +1,21 @@
 export default function TermsAndConditions() {
-  const effective = "January 13, 2026";
+  const lastUpdated = "January 13, 2026";
   const supportEmail = "support@looplycrm.com";
-  const company = "Looply (LooplyCRM)";
 
   return (
     <div className="card legal">
-      <p className="pill">Terms of Service</p>
-      <h1>Terms of Service</h1>
-      <p className="small">Effective date: {effective}</p>
+      <p className="pill">Terms and Conditions</p>
+      <h1>Terms and Conditions</h1>
+      <p className="small">Last updated: {lastUpdated}</p>
 
       <p>
-        These Terms of Service ("Terms") govern your access to and use of the {company} website and services ("Service").
-        By accessing or using the Service, you agree to be bound by these Terms.
+        These Terms and Conditions ("Terms") govern your access to and use of the Looply service ("Looply", "Company", "we",
+        "us", or "our"). By accessing or using Looply, you agree to be bound by these Terms.
       </p>
 
       <h2>1. Service</h2>
       <p>
-        The Service provides tools to manage inbound leads and automate follow-ups through supported channels (e.g., email,
+        Looply provides tools to manage inbound leads and automate follow-ups through supported channels (e.g., email,
         messaging integrations). Features may change over time as we improve the product.
       </p>
 
@@ -54,7 +53,7 @@ export default function TermsAndConditions() {
 
       <h2>7. Limitation of Liability</h2>
       <p>
-        To the maximum extent permitted by law, {company} shall not be liable for any indirect, incidental, special,
+        To the maximum extent permitted by law, Looply shall not be liable for any indirect, incidental, special,
         consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
       </p>
 
@@ -72,11 +71,8 @@ export default function TermsAndConditions() {
 
       <h2>10. Contact</h2>
       <p>
-        Questions about these Terms? Contact us at <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
-      </p>
-
-      <p className="small" style={{ marginTop: 18 }}>
-        Note: Replace "{company}" with your legal entity name once you finalize it (e.g., a Turkish sole proprietor or company).
+        If you have any questions about these Terms, please contact Looply at{" "}
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
     </div>
   );
