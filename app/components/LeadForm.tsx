@@ -32,9 +32,20 @@ export default function LeadForm() {
         body: JSON.stringify(payload),
       });
 
-      const json = (await res.json()) as { ok?: boolean; error?: string };
+      const json = (await res.json()) as
+        | { ok?: boolean }
+        | { ok?: boolean; error?: string }
+        | { ok?: boolean; message?: string }
+        | { ok?: boolean; errors?: Record<string, string> };
       if (!res.ok || !json.ok) {
-        setError(json.error || "Something went wrong. Please try again.");
+        const errors = "errors" in json ? json.errors : undefined;
+        const firstError = errors ? Object.values(errors)[0] : undefined;
+        const msg =
+          firstError ||
+          ("message" in json ? json.message : undefined) ||
+          ("error" in json ? json.error : undefined) ||
+          "Couldn’t send your request. Please try again or email support@looplycrm.com.";
+        setError(msg);
         setState("error");
         return;
       }
@@ -42,7 +53,7 @@ export default function LeadForm() {
       form.reset();
       setState("success");
     } catch {
-      setError("Network error. Please try again.");
+      setError("Couldn’t send your request. Please try again or email support@looplycrm.com.");
       setState("error");
     }
   }
@@ -93,7 +104,7 @@ export default function LeadForm() {
 
       {state === "success" ? (
         <p className="small" style={{ marginTop: 10, color: "rgba(150,255,200,0.92)" }}>
-          Thanks — your request was sent.
+          Thanks! We&apos;ll reply within 1 business day.
         </p>
       ) : null}
 
