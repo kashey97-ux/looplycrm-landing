@@ -1,3 +1,5 @@
+import LeadForm from "./components/LeadForm";
+
 export default function Home() {
   return (
     <>
@@ -11,7 +13,7 @@ export default function Home() {
         <nav className="navlinks">
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
-          <a className="button primary" href="mailto:support@looplycrm.com?subject=Looply%20Demo%20Request">
+          <a className="button primary" href="#demo">
             Start Free Trial
           </a>
         </nav>
@@ -28,7 +30,7 @@ export default function Home() {
             </p>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <a className="button primary" href="mailto:support@looplycrm.com?subject=Looply%20Trial%20Request">
+              <a className="button primary" href="#demo">
                 Start Free Trial
               </a>
               <a className="button" href="#how">See How It Works</a>
@@ -72,7 +74,7 @@ export default function Home() {
             </div>
 
             <div className="section">
-              <a className="button primary" style={{ width: "100%" }} href="mailto:support@looplycrm.com?subject=Looply%20Demo%20Request">
+              <a className="button primary" style={{ width: "100%" }} href="#demo">
                 Request a demo
               </a>
               <p className="small" style={{ marginTop: 10 }}>
@@ -138,6 +140,26 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="demo" className="card section">
+          <p className="kicker">Request a demo</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
+            <div>
+              <p className="h2">See Looply on your leads</p>
+              <p className="p">
+                Tell us what kind of leads you get and how you follow up today — we’ll show you how Looply can recover more
+                of them with instant replies and smart sequences.
+              </p>
+              <p className="small" style={{ marginTop: 10 }}>
+                Or email us directly at <a href="mailto:support@looplycrm.com">support@looplycrm.com</a>.
+              </p>
+            </div>
+
+            <div className="card" style={{ borderColor: "rgba(255,255,255,0.18)" }}>
+              <LeadForm />
+            </div>
+          </div>
+        </section>
+
         <section className="card section">
           <p className="kicker">Ready?</p>
           <p className="h2">Stop losing leads today</p>
@@ -145,12 +167,12 @@ export default function Home() {
             You already pay for leads. Looply helps you actually convert them.
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
-            <a className="button primary" href="mailto:support@looplycrm.com?subject=Looply%20Start%20Trial">
+            <a className="button primary" href="#demo">
               Start Free Trial
             </a>
-            <a className="button" href="/terms">Terms</a>
-            <a className="button" href="/privacy">Privacy</a>
-            <a className="button" href="/refunds">Refunds</a>
+            <a className="button" href="/terms-and-conditions">Terms</a>
+            <a className="button" href="/privacy-policy">Privacy</a>
+            <a className="button" href="/refund-policy">Refunds</a>
           </div>
         </section>
       </main>
@@ -158,9 +180,9 @@ export default function Home() {
       <footer className="footer">
         <div>© {new Date().getFullYear()} Looply</div>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <a href="/terms">Terms</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/refunds">Refund Policy</a>
+          <a href="/terms-and-conditions">Terms</a>
+          <a href="/privacy-policy">Privacy</a>
+          <a href="/refund-policy">Refund Policy</a>
           <a href="mailto:support@looplycrm.com">support@looplycrm.com</a>
         </div>
       </footer>

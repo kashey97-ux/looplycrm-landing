@@ -7,6 +7,7 @@
 }
 
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 html, body { height: 100%; }
 body {
   margin: 0;
@@ -142,4 +143,43 @@ a { color: inherit; text-decoration: none; }
 .legal p, .legal li { color: var(--muted); line-height: 1.65; }
 .legal ul { margin: 8px 0 0 18px; }
 .small { font-size: 13px; color: var(--muted); }
+
+.leadForm label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 6px 0;
+}
+
+.leadForm input,
+.leadForm textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.18);
+  color: var(--text);
+  outline: none;
+}
+
+.leadForm textarea { resize: vertical; }
+
+.leadFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .leadFormGrid { grid-template-columns: 1fr; }
+}
+
+.leadHoneypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
 
