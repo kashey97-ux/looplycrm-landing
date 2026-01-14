@@ -4,6 +4,10 @@ export default function TermsAndConditions() {
 
   return (
     <div className="card legal">
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <a className="button" href="/">Back to Home</a>
+      </div>
+
       <p className="pill">Terms and Conditions</p>
       <h1>Terms and Conditions</h1>
       <p className="small">Last updated: {lastUpdated}</p>
@@ -74,6 +78,10 @@ export default function TermsAndConditions() {
         If you have any questions about these Terms, please contact Looply at{" "}
         <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
+
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+        <a className="button" href="/">Back to Home</a>
+      </div>
     </div>
   );
 }

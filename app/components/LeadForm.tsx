@@ -34,12 +34,25 @@ export default function LeadForm() {
 
       const json = (await res.json()) as
         | { ok?: boolean }
-        | { ok?: boolean; error?: string }
+        | { ok?: boolean; error?: string; missing?: string[] }
         | { ok?: boolean; message?: string }
         | { ok?: boolean; errors?: Record<string, string> };
       if (!res.ok || !json.ok) {
         const errors = "errors" in json ? json.errors : undefined;
         const firstError = errors ? Object.values(errors)[0] : undefined;
+
+        if ("error" in json && json.error === "email_not_configured") {
+          const missing = "missing" in json && Array.isArray(json.missing) ? json.missing : [];
+          const suffix = missing.length ? ` Missing env: ${missing.join(", ")}` : "";
+          setError(`Email is not configured on the server.${suffix}`);
+          setState("error");
+          return;
+        }
+        if ("error" in json && json.error === "rate_limited") {
+          setError("Too many requests. Please try again later.");
+          setState("error");
+          return;
+        }
         const msg =
           firstError ||
           ("message" in json ? json.message : undefined) ||
@@ -83,8 +96,8 @@ export default function LeadForm() {
       </div>
 
       <div className="leadField" style={{ marginTop: 10 }}>
-        <label htmlFor="message">Message</label>
-        <textarea id="message" name="message" required rows={5} placeholder="Tell us what you’re looking for…" />
+        <label htmlFor="message">Message (optional)</label>
+        <textarea id="message" name="message" rows={5} placeholder="Tell us what you’re looking for…" />
       </div>
 
       {/* Honeypot: keep off-screen so screen readers don’t trip over it */}
@@ -104,7 +117,7 @@ export default function LeadForm() {
 
       {state === "success" ? (
         <p className="small" style={{ marginTop: 10, color: "rgba(150,255,200,0.92)" }}>
-          Thanks! We&apos;ll reply within 1 business day.
+          Thanks! We&apos;ll reply shortly.
         </p>
       ) : null}
 

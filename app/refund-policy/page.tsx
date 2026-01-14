@@ -4,6 +4,10 @@ export default function RefundPolicy() {
 
   return (
     <div className="card legal">
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <a className="button" href="/">Back to Home</a>
+      </div>
+
       <p className="pill">Refund Policy</p>
       <h1>Refund Policy</h1>
       <p className="small">Last updated: {lastUpdated}</p>
@@ -19,6 +23,10 @@ export default function RefundPolicy() {
       <p>
         To request a refund, contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
+
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+        <a className="button" href="/">Back to Home</a>
+      </div>
     </div>
   );
 }

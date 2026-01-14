@@ -1,6 +1,8 @@
 import LeadForm from "./components/LeadForm";
 
 export default function Home() {
+  const startTrialUrl = "/app/signup";
+
   return (
     <>
       <header className="nav">
@@ -13,7 +15,7 @@ export default function Home() {
         <nav className="navlinks">
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
-          <a className="button primary" href="#demo">
+          <a className="button primary" href={startTrialUrl}>
             Start Free Trial
           </a>
         </nav>
@@ -30,11 +32,15 @@ export default function Home() {
             </p>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <a className="button primary" href="#demo">
+              <a className="button primary" href={startTrialUrl}>
                 Start Free Trial
               </a>
               <a className="button" href="#how">See How It Works</a>
             </div>
+
+            <p className="small" style={{ marginTop: 10 }}>
+              Already have an account? <a href="/app/login">Log in</a>
+            </p>
 
             <div className="section grid" style={{ marginTop: 18 }}>
               <div className="card">
@@ -115,6 +121,11 @@ export default function Home() {
               <li>Lead timeline</li>
               <li>Manual tasks</li>
             </ul>
+            <div style={{ marginTop: 12 }}>
+              <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=starter">
+                Choose plan
+              </a>
+            </div>
           </div>
 
           <div className="card" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
@@ -126,6 +137,11 @@ export default function Home() {
               <li>Advanced sequences</li>
               <li>WhatsApp option</li>
             </ul>
+            <div style={{ marginTop: 12 }}>
+              <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=growth">
+                Choose plan
+              </a>
+            </div>
           </div>
 
           <div className="card">
@@ -137,6 +153,11 @@ export default function Home() {
               <li>Priority support</li>
               <li>Custom workflows</li>
             </ul>
+            <div style={{ marginTop: 12 }}>
+              <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=pro">
+                Choose plan
+              </a>
+            </div>
           </div>
         </section>
 
@@ -167,7 +188,7 @@ export default function Home() {
             You already pay for leads. Looply helps you actually convert them.
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
-            <a className="button primary" href="#demo">
+            <a className="button primary" href={startTrialUrl}>
               Start Free Trial
             </a>
             <a className="button" href="/terms-and-conditions">Terms</a>
