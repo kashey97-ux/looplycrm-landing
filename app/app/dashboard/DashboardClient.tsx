@@ -49,11 +49,11 @@ export default function DashboardClient() {
   return (
     <div className="section">
       <div className="card">
-        <div style={{ display: "flex", gap: 10, justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
-          <div>
+        <div className="dashboardHeaderRow">
+          <div className="dashboardHeaderLeft">
             <p className="pill">Dashboard</p>
-            <h1 style={{ margin: "10px 0 6px" }}>Welcome{userName ? `, ${userName}` : ""}</h1>
-            <p className="small" style={{ margin: 0 }}>
+            <h1>Welcome{userName ? `, ${userName}` : ""}</h1>
+            <p className="small dashboardSubtitle">
               Signed in as {email || "-"}
               {plan ? ` • Trial plan: ${plan}` : ""}
             </p>
