@@ -71,7 +71,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
+        <div className="btnRow" style={{ marginTop: 12 }}>
           <button className="button primary" type="submit" disabled={submitting}>
             {submitting ? "Logging in…" : "Log in"}
           </button>

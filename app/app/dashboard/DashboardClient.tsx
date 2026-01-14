@@ -58,7 +58,7 @@ export default function DashboardClient() {
               {plan ? ` • Trial plan: ${plan}` : ""}
             </p>
           </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div className="btnRow">
             <button className="button primary" onClick={onCreateTestLead}>
               Create test lead
             </button>
@@ -101,7 +101,7 @@ export default function DashboardClient() {
         )}
       </div>
 
-      <div className="section" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="section btnRow">
         <a className="button" href="/">
           Back to Home
         </a>

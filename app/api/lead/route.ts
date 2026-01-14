@@ -25,6 +25,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 type LeadPayload = {
   name?: unknown;
@@ -33,6 +34,7 @@ type LeadPayload = {
   company?: unknown;
   message?: unknown;
   website?: unknown; // honeypot
+  createdAt?: unknown; // anti-spam: minimum submission time
 };
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -94,6 +96,12 @@ function getRequestId(request: Request) {
   );
 }
 
+function jsonWithRequestId(body: unknown, init: { status?: number; requestId: string }) {
+  const res = NextResponse.json(body, { status: init.status });
+  res.headers.set("x-request-id", init.requestId);
+  return res;
+}
+
 function getClientIp(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ip = (forwardedFor?.split(",")[0] || request.headers.get("x-real-ip") || "unknown").trim();
@@ -125,27 +133,39 @@ export async function POST(request: Request) {
 
   const rl = rateLimit(ip);
   if (!rl.ok) {
-    return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 });
+    return jsonWithRequestId({ ok: false, error: "rate_limited" }, { status: 429, requestId });
   }
 
   let body: LeadPayload;
   try {
     body = (await request.json()) as LeadPayload;
   } catch {
-    return NextResponse.json({ ok: false, message: "Invalid request." }, { status: 400 });
+    return jsonWithRequestId({ ok: false, message: "Invalid request." }, { status: 400, requestId });
   }
 
   // Honeypot: if filled, treat as success but do nothing.
   const honeypot = norm(body.website);
   if (honeypot) {
-    return NextResponse.json({ ok: true });
+    return jsonWithRequestId({ ok: true }, { status: 200, requestId });
+  }
+
+  // Anti-spam: minimum submission time (client sends createdAt timestamp)
+  const createdAtRaw = body.createdAt;
+  const createdAt =
+    typeof createdAtRaw === "number"
+      ? createdAtRaw
+      : typeof createdAtRaw === "string"
+        ? Number(createdAtRaw)
+        : NaN;
+  if (!Number.isFinite(createdAt) || Date.now() - createdAt < 1200) {
+    return jsonWithRequestId({ ok: false, error: "spam" }, { status: 400, requestId });
   }
 
   const name = norm(body.name);
   const email = norm(body.email).toLowerCase();
   const phone = norm(body.phone);
   const company = norm(body.company);
-  const message = norm(body.message);
+  let message = norm(body.message);
 
   const errors: Record<string, string> = {};
 
@@ -159,10 +179,75 @@ export async function POST(request: Request) {
   }
   if (phone && phone.length > 60) errors.phone = "Phone looks too long.";
   if (company && company.length > 200) errors.company = "Company looks too long.";
-  if (message && message.length > 4000) errors.message = "Message looks too long.";
+  // Sanitize and enforce max message length
+  message = message.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  if (message.length > 4000) errors.message = "Message looks too long.";
 
   if (Object.keys(errors).length > 0) {
-    return NextResponse.json({ ok: false, errors }, { status: 400 });
+    return jsonWithRequestId({ ok: false, errors }, { status: 400, requestId });
+  }
+
+  const shouldUseResend = process.env.EMAIL_PROVIDER === "resend" || Boolean(process.env.RESEND_API_KEY);
+
+  if (shouldUseResend) {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const to = process.env.LEAD_TO_EMAIL;
+    const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+
+    const missingResend: string[] = [];
+    if (!resendApiKey) missingResend.push("RESEND_API_KEY");
+    if (!to) missingResend.push("LEAD_TO_EMAIL");
+    if (!from) missingResend.push("SMTP_FROM (or SMTP_USER)");
+
+    if (missingResend.length > 0) {
+      console.error(
+        JSON.stringify({
+          tag: "lead_email_not_configured",
+          requestId,
+          provider: "resend",
+          missing: missingResend,
+        }),
+      );
+      return jsonWithRequestId({ error: "email_not_configured", missing: missingResend }, { status: 500, requestId });
+    }
+
+    try {
+      const resend = new Resend(resendApiKey!);
+      await resend.emails.send({
+        from: from!,
+        to: to!,
+        subject: `Looply demo request — ${name}`,
+        text: [
+          "New demo request",
+          "",
+          `Name: ${name || "-"}`,
+          `Email: ${email || "-"}`,
+          `Phone: ${phone || "-"}`,
+          `Company: ${company || "-"}`,
+          `IP: ${ip}`,
+          "",
+          "Message:",
+          message || "-",
+          "",
+        ].join("\n"),
+        replyTo: email || undefined,
+      });
+
+      return jsonWithRequestId({ ok: true }, { status: 200, requestId });
+    } catch (err: any) {
+      const code = err?.statusCode || err?.code || err?.name;
+      const msg = err?.message || String(err);
+      console.error(
+        JSON.stringify({
+          tag: "lead_send_failed",
+          requestId,
+          provider: "resend",
+          code,
+          message: msg,
+        }),
+      );
+      return jsonWithRequestId({ ok: false, error: "send_failed" }, { status: 500, requestId });
+    }
   }
 
   const requiredEnvs = [
@@ -177,8 +262,15 @@ export async function POST(request: Request) {
 
   const missing = requiredEnvs.filter((k) => !process.env[k]);
   if (missing.length > 0) {
-    console.error(`[lead][${requestId}] email_not_configured missing=${missing.join(",")}`);
-    return NextResponse.json({ error: "email_not_configured", missing }, { status: 500 });
+    console.error(
+      JSON.stringify({
+        tag: "lead_email_not_configured",
+        requestId,
+        provider: "smtp",
+        missing,
+      }),
+    );
+    return jsonWithRequestId({ error: "email_not_configured", missing }, { status: 500, requestId });
   }
 
   const to = process.env.LEAD_TO_EMAIL!;
@@ -187,11 +279,18 @@ export async function POST(request: Request) {
   const secure = String(process.env.SMTP_SECURE).toLowerCase() === "true";
   const user = process.env.SMTP_USER!;
   const pass = process.env.SMTP_PASS!;
-  const from = process.env.SMTP_FROM!;
+  const from = process.env.SMTP_FROM || user;
 
   if (!Number.isFinite(port) || port <= 0) {
-    console.error(`[lead][${requestId}] email_not_configured invalid SMTP_PORT`);
-    return NextResponse.json({ error: "email_not_configured", missing: ["SMTP_PORT"] }, { status: 500 });
+    console.error(
+      JSON.stringify({
+        tag: "lead_email_not_configured",
+        requestId,
+        provider: "smtp",
+        missing: ["SMTP_PORT"],
+      }),
+    );
+    return jsonWithRequestId({ error: "email_not_configured", missing: ["SMTP_PORT"] }, { status: 500, requestId });
   }
 
   try {
@@ -222,10 +321,32 @@ export async function POST(request: Request) {
       ].join("\n"),
     });
 
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error(`[lead][${requestId}] smtp_send_failed`, err);
-    return NextResponse.json({ ok: false, error: "send_failed" }, { status: 500 });
+    return jsonWithRequestId({ ok: true }, { status: 200, requestId });
+  } catch (err: any) {
+    const responseCode = err?.responseCode;
+    const code = responseCode ?? err?.code ?? err?.name;
+    const msg = err?.message || String(err);
+    const hint =
+      responseCode === 535
+        ? "Likely wrong SMTP_PASS or need Zoho App Password or wrong smtp host (.eu vs .com)"
+        : undefined;
+
+    console.error(
+      JSON.stringify({
+        tag: "lead_send_failed",
+        requestId,
+        provider: "smtp",
+        code,
+        message: msg,
+        hint,
+        host: process.env.SMTP_HOST,
+        port,
+        secure,
+      }),
+    );
+
+    // Keep user-facing response generic & safe.
+    return jsonWithRequestId({ ok: false, error: "send_failed" }, { status: 500, requestId });
   }
 }
 

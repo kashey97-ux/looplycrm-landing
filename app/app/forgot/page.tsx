@@ -48,7 +48,7 @@ export default function ForgotPage() {
           <p className="small" style={{ color: "rgba(150,255,200,0.92)" }}>
             Password updated. You can now log in.
           </p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
+          <div className="btnRow" style={{ marginTop: 12 }}>
             <a className="button primary" href="/app/login">
               Go to login
             </a>
@@ -84,7 +84,7 @@ export default function ForgotPage() {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
+          <div className="btnRow" style={{ marginTop: 12 }}>
             <button className="button primary" type="submit" disabled={submitting}>
               {submitting ? "Updating…" : "Update password"}
             </button>

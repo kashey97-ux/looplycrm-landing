@@ -7,10 +7,12 @@ type SubmitState = "idle" | "submitting" | "success" | "error";
 export default function LeadForm() {
   const [state, setState] = useState<SubmitState>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setRequestId(null);
     setState("submitting");
 
     const form = e.currentTarget;
@@ -23,6 +25,7 @@ export default function LeadForm() {
       company: String(fd.get("company") ?? ""),
       message: String(fd.get("message") ?? ""),
       website: String(fd.get("website") ?? ""), // honeypot
+      createdAt: Number(fd.get("createdAt") ?? Date.now()),
     };
 
     try {
@@ -31,6 +34,9 @@ export default function LeadForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      const rid = res.headers.get("x-request-id");
+      if (rid) setRequestId(rid);
 
       const json = (await res.json()) as
         | { ok?: boolean }
@@ -50,6 +56,16 @@ export default function LeadForm() {
         }
         if ("error" in json && json.error === "rate_limited") {
           setError("Too many requests. Please try again later.");
+          setState("error");
+          return;
+        }
+        if ("error" in json && json.error === "spam") {
+          setError("Looks like spam. Please try again.");
+          setState("error");
+          return;
+        }
+        if ("error" in json && json.error === "send_failed") {
+          setError("Send failed. If this repeats, email support@looplycrm.com.");
           setState("error");
           return;
         }
@@ -73,6 +89,7 @@ export default function LeadForm() {
 
   return (
     <form className="leadForm" onSubmit={onSubmit}>
+      <input type="hidden" name="createdAt" value={Date.now()} />
       <div className="leadFormGrid">
         <div className="leadField">
           <label htmlFor="name">Name</label>
@@ -122,9 +139,16 @@ export default function LeadForm() {
       ) : null}
 
       {state === "error" ? (
-        <p className="small" style={{ marginTop: 10, color: "rgba(255,150,150,0.92)" }}>
-          {error}
-        </p>
+        <>
+          <p className="small" style={{ marginTop: 10, color: "rgba(255,150,150,0.92)" }}>
+            {error}
+          </p>
+          {requestId ? (
+            <p className="small" style={{ marginTop: 6 }}>
+              Request ID: <span style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{requestId}</span>
+            </p>
+          ) : null}
+        </>
       ) : null}
     </form>
   );

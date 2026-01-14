@@ -4,7 +4,7 @@ export default function RefundPolicy() {
 
   return (
     <div className="card legal">
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="btnRow">
         <a className="button" href="/">Back to Home</a>
       </div>
 
@@ -24,7 +24,7 @@ export default function RefundPolicy() {
         To request a refund, contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
 
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+      <div className="btnRow" style={{ marginTop: 18 }}>
         <a className="button" href="/">Back to Home</a>
       </div>
     </div>

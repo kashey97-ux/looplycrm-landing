@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="card legal">
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="btnRow">
         <a className="button" href="/">Back to Home</a>
       </div>
 
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
         Note: Once you finalize your legal entity + address, add them here (Paddle sometimes prefers seeing it).
       </p>
 
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+      <div className="btnRow" style={{ marginTop: 18 }}>
         <a className="button" href="/">Back to Home</a>
       </div>
     </div>
