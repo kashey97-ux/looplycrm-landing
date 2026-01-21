@@ -111,8 +111,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="section grid">
-          <div className="card">
+        <section id="pricing" className="section grid pricingGrid">
+          <div className="card pricingCard">
             <p className="kicker">Starter</p>
             <p className="h2">$99 / month</p>
             <p className="p">For small teams getting serious about lead conversion.</p>
@@ -121,14 +121,14 @@ export default function Home() {
               <li>Lead timeline</li>
               <li>Manual tasks</li>
             </ul>
-            <div style={{ marginTop: 12 }}>
+            <div className="pricingCardCta">
               <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=starter">
                 Choose plan
               </a>
             </div>
           </div>
 
-          <div className="card" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
+          <div className="card pricingCard" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
             <p className="kicker">Growth</p>
             <p className="h2">$199 / month</p>
             <p className="p">More leads, more automation, better conversion.</p>
@@ -137,14 +137,14 @@ export default function Home() {
               <li>Advanced sequences</li>
               <li>WhatsApp option</li>
             </ul>
-            <div style={{ marginTop: 12 }}>
+            <div className="pricingCardCta">
               <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=growth">
                 Choose plan
               </a>
             </div>
           </div>
 
-          <div className="card">
+          <div className="card pricingCard">
             <p className="kicker">Pro</p>
             <p className="h2">$299 / month</p>
             <p className="p">For high-volume lead pipelines.</p>
@@ -153,7 +153,7 @@ export default function Home() {
               <li>Priority support</li>
               <li>Custom workflows</li>
             </ul>
-            <div style={{ marginTop: 12 }}>
+            <div className="pricingCardCta">
               <a className="button primary" style={{ width: "100%" }} href="/app/signup?plan=pro">
                 Choose plan
               </a>

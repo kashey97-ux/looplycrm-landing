@@ -1,6 +1,7 @@
 export default function TermsAndConditions() {
-  const lastUpdated = "January 13, 2026";
+  const lastUpdated = "January 21, 2026";
   const supportEmail = "support@looplycrm.com";
+  const sellerName = "Vladimir Belyaev";
 
   return (
     <div className="card legal">
@@ -13,8 +14,9 @@ export default function TermsAndConditions() {
       <p className="small">Last updated: {lastUpdated}</p>
 
       <p>
-        These Terms and Conditions ("Terms") govern your access to and use of the Looply service ("Looply", "Company", "we",
-        "us", or "our"). By accessing or using Looply, you agree to be bound by these Terms.
+        These Terms and Conditions ("Terms") govern your access to and use of the Looply software service ("Looply", "we",
+        "us", or "our"). Looply is a software service operated by {sellerName}, an individual seller, operating under the
+        trade name "Looply". By accessing or using Looply, you agree to be bound by these Terms.
       </p>
 
       <h2>1. Service</h2>
@@ -31,8 +33,9 @@ export default function TermsAndConditions() {
 
       <h2>3. Subscriptions & Billing</h2>
       <p>
-        The Service is offered on a subscription basis. Payments are processed by our payment partner (e.g., Paddle).
-        By subscribing, you authorize recurring charges according to your plan until you cancel.
+        The Service is offered on a subscription basis. Payments and subscriptions are processed by our payment partner,
+        Paddle, who acts as the Merchant of Record. By subscribing, you authorize recurring charges according to your plan
+        until you cancel.
       </p>
 
       <h2>4. Acceptable Use</h2>
@@ -67,16 +70,25 @@ export default function TermsAndConditions() {
         misuse the Service.
       </p>
 
-      <h2>9. Changes to Terms</h2>
+      <h2>9. Refunds</h2>
+      <p>
+        Refunds are described in our{" "}
+        <a href="/refund-policy" style={{ textDecoration: "underline" }}>
+          Refund Policy
+        </a>
+        .
+      </p>
+
+      <h2>10. Changes to Terms</h2>
       <p>
         We may update these Terms from time to time. The updated version will be posted on this page with a new effective
         date.
       </p>
 
-      <h2>10. Contact</h2>
+      <h2>11. Contact</h2>
       <p>
         If you have any questions about these Terms, please contact Looply at{" "}
-        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>. Seller: {sellerName}.
       </p>
 
       <div className="btnRow" style={{ marginTop: 18 }}>

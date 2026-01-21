@@ -51,10 +51,28 @@ export default function SignupClient() {
         name: name.trim(),
         passwordHash,
         createdAt: Date.now(),
+        plan: planLabel.toLowerCase() as "starter" | "growth" | "pro",
+        trialStart: Date.now(),
+        trialDays: 7,
+        onboarding: { completed: false },
       };
       setUsers(users);
       setSession(normalizedEmail);
-      router.push(`/app/dashboard?plan=${encodeURIComponent(planLabel.toLowerCase())}`);
+
+      // Register trial metadata server-side (KV) so webhook + API keys can enforce gating.
+      fetch("/api/app/register", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          name: name.trim(),
+          plan: planLabel.toLowerCase(),
+          trialStart: Date.now(),
+          trialDays: 7,
+        }),
+      }).catch(() => {});
+
+      router.push("/app");
     } finally {
       setSubmitting(false);
     }

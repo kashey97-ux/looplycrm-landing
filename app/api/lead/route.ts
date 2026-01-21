@@ -187,6 +187,17 @@ export async function POST(request: Request) {
     return jsonWithRequestId({ ok: false, errors }, { status: 400, requestId });
   }
 
+  console.log(
+    JSON.stringify({
+      tag: "demo_lead_received",
+      requestId,
+      ip,
+      name,
+      email,
+      hasMessage: Boolean(message),
+    }),
+  );
+
   const shouldUseResend = process.env.EMAIL_PROVIDER === "resend" || Boolean(process.env.RESEND_API_KEY);
 
   if (shouldUseResend) {

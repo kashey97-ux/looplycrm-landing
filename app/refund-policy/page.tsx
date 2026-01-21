@@ -1,5 +1,5 @@
 export default function RefundPolicy() {
-  const lastUpdated = "January 13, 2026";
+  const lastUpdated = "January 21, 2026";
   const supportEmail = "support@looplycrm.com";
 
   return (
@@ -13,13 +13,9 @@ export default function RefundPolicy() {
       <p className="small">Last updated: {lastUpdated}</p>
 
       <p>We offer a full refund within 14 days of the initial purchase.</p>
-
       <p>
-        If you are not satisfied with Looply for any reason, you may request a refund within 14 days of your first payment.
+        Refunds are processed to the original payment method via our payment partner, Paddle.
       </p>
-
-      <p>Refunds are processed back to the original payment method.</p>
-
       <p>
         To request a refund, contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>

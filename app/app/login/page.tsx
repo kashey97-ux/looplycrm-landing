@@ -34,7 +34,7 @@ export default function LoginPage() {
         return;
       }
       setSession(normalizedEmail);
-      router.push("/app/dashboard");
+      router.push("/app");
     } finally {
       setSubmitting(false);
     }
