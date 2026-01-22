@@ -169,8 +169,9 @@ export async function POST(request: Request) {
 
   const errors: Record<string, string> = {};
 
-  if (name.length < 2) errors.name = "Please enter your name.";
   if (!emailRe.test(email)) errors.email = "Please enter a valid email address.";
+  if (company.length < 2) errors.company = "Please enter your company name.";
+  if (name && name.length < 2) errors.name = "Name looks too short.";
   if (emailRe.test(email)) {
     const domain = email.split("@")[1] || "";
     if (domain && DISPOSABLE_EMAIL_DOMAINS.has(domain)) {
@@ -194,6 +195,7 @@ export async function POST(request: Request) {
       ip,
       name,
       email,
+      company,
       hasMessage: Boolean(message),
     }),
   );
@@ -227,7 +229,7 @@ export async function POST(request: Request) {
       await resend.emails.send({
         from: from!,
         to: to!,
-        subject: `Looply demo request — ${name}`,
+        subject: `Looply demo request — ${company || email || "New request"}`,
         text: [
           "New demo request",
           "",
@@ -315,7 +317,7 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from,
       to,
-      subject: `Looply demo request — ${name}`,
+      subject: `Looply demo request — ${company || email || "New request"}`,
       replyTo: email || undefined,
       text: [
         "New demo request",
