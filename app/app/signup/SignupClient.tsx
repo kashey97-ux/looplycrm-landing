@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getUsers, setSession, setUsers, sha256Hex } from "../_lib/mvpAuth";
+import { setSession } from "../_lib/mvpAuth";
 
 export default function SignupClient() {
   const router = useRouter();
@@ -39,40 +39,30 @@ export default function SignupClient() {
         return;
       }
 
-      const users = getUsers();
-      if (users[normalizedEmail]) {
-        setError("Account already exists. Please log in.");
-        return;
-      }
-
-      const passwordHash = await sha256Hex(password);
-      users[normalizedEmail] = {
-        email: normalizedEmail,
-        name: name.trim(),
-        passwordHash,
-        createdAt: Date.now(),
-        plan: planLabel.toLowerCase() as "starter" | "growth" | "pro",
-        trialStart: Date.now(),
-        trialDays: 7,
-        onboarding: { completed: false },
-      };
-      setUsers(users);
-      setSession(normalizedEmail);
-
-      // Register trial metadata server-side (KV) so webhook + API keys can enforce gating.
-      fetch("/api/app/register", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          email: normalizedEmail,
           name: name.trim(),
+          email: normalizedEmail,
+          password,
           plan: planLabel.toLowerCase(),
-          trialStart: Date.now(),
-          trialDays: 7,
         }),
-      }).catch(() => {});
+      });
+      const json = (await res.json().catch(() => ({}))) as any;
+      if (!res.ok || json?.ok === false) {
+        setError(json?.message || json?.error || "Signup failed.");
+        return;
+      }
 
-      router.push("/app");
+      const user = json?.user || json?.data?.user || {};
+      setSession({
+        email: String(user?.email || normalizedEmail),
+        name: user?.name ? String(user.name) : name.trim(),
+        plan: user?.plan ? String(user.plan) : planLabel.toLowerCase(),
+      });
+
+      router.push("/app/dashboard");
     } finally {
       setSubmitting(false);
     }
@@ -80,9 +70,9 @@ export default function SignupClient() {
 
   return (
     <div className="card section">
-      <p className="pill">Free Trial</p>
+      <p className="pill">Start trial</p>
       <h1>Create your account</h1>
-      <p className="p">Plan: {planLabel} (trial)</p>
+      <p className="p">Plan: {planLabel}</p>
 
       <form className="leadForm" onSubmit={onSubmit} style={{ marginTop: 14 }}>
         <div className="leadFormGrid">

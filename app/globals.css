@@ -259,6 +259,63 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
 }
 
+.splitGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tableWrap { overflow-x: auto; }
+.dataTable { width: 100%; border-collapse: collapse; min-width: 720px; }
+.actionsCol { min-width: 240px; white-space: nowrap; }
+.tableActionsRow { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+.tableActionsMenu { display: none; position: relative; }
+.tableActionsMenu summary { list-style: none; cursor: pointer; }
+.tableActionsMenu summary::-webkit-details-marker { display: none; }
+.tableActionsMenuBody {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+.checklistRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+}
+.checklistStatus {
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.checklistActions { display: flex; justify-content: flex-end; }
+
+@media (max-width: 900px) {
+  .dataTable { min-width: 640px; }
+  .tableActionsRow { display: none; }
+  .tableActionsMenu { display: inline-flex; }
+  .checklistRow { grid-template-columns: 1fr; }
+  .checklistActions { justify-content: flex-start; }
+  .splitGrid { grid-template-columns: 1fr; }
+}
+
 .faqItem {
   border: 1px solid var(--border);
   border-radius: 14px;

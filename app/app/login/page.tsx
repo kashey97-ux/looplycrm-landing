@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, getUsers, setSession, sha256Hex } from "../_lib/mvpAuth";
+import { getSession, setSession } from "../_lib/mvpAuth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,19 +22,23 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      const users = getUsers();
-      const user = users[normalizedEmail];
-      if (!user) {
-        setError("Invalid email or password.");
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      });
+      const json = (await res.json().catch(() => ({}))) as any;
+      if (!res.ok || json?.ok === false) {
+        setError(json?.message || json?.error || "Invalid email or password.");
         return;
       }
-      const passwordHash = await sha256Hex(password);
-      if (passwordHash !== user.passwordHash) {
-        setError("Invalid email or password.");
-        return;
-      }
-      setSession(normalizedEmail);
-      router.push("/app");
+      const user = json?.user || json?.data?.user || {};
+      setSession({
+        email: String(user?.email || normalizedEmail),
+        name: user?.name ? String(user.name) : undefined,
+        plan: user?.plan ? String(user.plan) : undefined,
+      });
+      router.push("/app/dashboard");
     } finally {
       setSubmitting(false);
     }
@@ -44,6 +48,7 @@ export default function LoginPage() {
     <div className="card section">
       <p className="pill">Account</p>
       <h1>Log in</h1>
+      <p className="p">For sales reps and owner-operators.</p>
 
       <form className="leadForm" onSubmit={onSubmit} style={{ marginTop: 14 }}>
         <div className="leadFormGrid">

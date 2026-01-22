@@ -24,6 +24,7 @@ export default function ApiKeysClient() {
     }
   }, []);
   const ownerEmail = session?.email || null;
+  const [engineConfigured, setEngineConfigured] = useState(true);
 
   const [items, setItems] = useState<ApiKeyListItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,10 +41,12 @@ export default function ApiKeysClient() {
       .then((r) => {
         if (cancelled) return;
         if (r.ok === false) {
+          if (r.error.code === "engine_not_configured") setEngineConfigured(false);
           setError(r.error.message || "Failed to load API keys.");
           setItems([]);
           return;
         }
+        setEngineConfigured(true);
         const list = Array.isArray(r.data?.items) ? r.data.items : [];
         setItems(
           list.map((k: any) => ({
@@ -72,12 +75,27 @@ export default function ApiKeysClient() {
     setCreatedKey(null);
     setLoading(true);
     try {
-      const r = await engineFetch<{ id?: string; apiKey?: string; prefix?: string }>("/v1/api-keys", { method: "POST", json: {} });
-      if (r.ok === false) {
-        setError(r.error.message || "Failed to create API key.");
+      if (!ownerEmail) {
+        setError("Please log in again to create an API key.");
         return;
       }
-      setCreatedKey({ id: String((r.data as any)?.id || ""), apiKey: String((r.data as any)?.apiKey || ""), prefix: String((r.data as any)?.prefix || "") });
+      const res = await fetch("/api/keys/create", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+      const json = (await res.json()) as any;
+      if (!res.ok || json?.ok === false) {
+        const message =
+          json?.message ||
+          json?.error ||
+          (res.status === 500 ? "Engine API is not configured. Set ENGINE_API_URL." : "Failed to create API key.");
+        setError(String(message));
+        return;
+      }
+      setCreatedKey({ id: String(json?.id || ""), apiKey: String(json?.apiKey || ""), prefix: String(json?.prefix || "") });
       const next = await engineFetch<EngineApiKeyList>("/v1/api-keys");
       if (next.ok) {
         const list = Array.isArray(next.data?.items) ? next.data.items : [];
@@ -146,6 +164,16 @@ export default function ApiKeysClient() {
           </div>
         </div>
       </div>
+
+      {!engineConfigured ? (
+        <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
+          <p className="kicker">Engine is not configured</p>
+          <p className="p" style={{ marginTop: 10 }}>
+            Set <strong style={{ color: "rgba(255,255,255,0.92)" }}>ENGINE_API_URL</strong> and{" "}
+            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong>.
+          </p>
+        </div>
+      ) : null}
 
       {createdKey ? (
         <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>

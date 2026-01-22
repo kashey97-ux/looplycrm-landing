@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getSession, getUser, logout } from "./_lib/mvpAuth";
+import { getSession, logout } from "./_lib/mvpAuth";
 import { engineFetch, type EngineOnboardingState } from "./_lib/engineApi";
 
 const PUBLIC_APP_ROUTES = new Set<string>(["/app/login", "/app/signup", "/app/forgot"]);
@@ -19,13 +19,6 @@ export default function AppGuard() {
 
     if (!session) {
       if (!isPublic) router.replace("/app/login");
-      return;
-    }
-
-    const user = getUser(session.email);
-    if (!user) {
-      // Corrupt local state; force re-login.
-      router.replace("/app/login");
       return;
     }
 

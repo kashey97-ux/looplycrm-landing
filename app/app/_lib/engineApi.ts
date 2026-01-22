@@ -1,5 +1,3 @@
-import { getSession } from "./mvpAuth";
-
 export type EngineErrorCode =
   | "engine_not_configured"
   | "network_error"
@@ -13,8 +11,7 @@ export type EngineResult<T> =
   | { ok: false; status: number; error: { code: EngineErrorCode; message: string; details?: any } };
 
 function getEngineBaseUrl() {
-  const base = (process.env.NEXT_PUBLIC_ENGINE_API_URL || "").trim();
-  return base.replace(/\/+$/, "");
+  return "/api/engine";
 }
 
 async function parseJsonSafe(res: Response) {
@@ -30,25 +27,8 @@ export async function engineFetch<T>(
   init?: RequestInit & { json?: any },
 ): Promise<EngineResult<T>> {
   const base = getEngineBaseUrl();
-  if (!base) {
-    return {
-      ok: false,
-      status: 0,
-      error: { code: "engine_not_configured", message: "Engine API is not configured (NEXT_PUBLIC_ENGINE_API_URL)." },
-    };
-  }
-
-  const session = (() => {
-    try {
-      return getSession();
-    } catch {
-      return null;
-    }
-  })();
-
   const headers = new Headers(init?.headers || {});
   headers.set("accept", "application/json");
-  if (session?.token) headers.set("authorization", `Bearer ${session.token}`);
 
   let body: BodyInit | undefined = init?.body as any;
   if (Object.prototype.hasOwnProperty.call(init || {}, "json")) {
@@ -79,6 +59,7 @@ export async function engineFetch<T>(
     (json && (json.message || json.error || json.detail)) ? String(json.message || json.error || json.detail) : `Request failed (${res.status})`;
 
   const code: EngineErrorCode =
+    json?.error === "engine_not_configured" ? "engine_not_configured" :
     res.status === 400 ? "bad_request" :
     res.status === 401 ? "unauthorized" :
     res.status === 429 ? "rate_limited" :

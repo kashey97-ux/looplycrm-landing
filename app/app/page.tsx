@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, getUser } from "./_lib/mvpAuth";
+import { getSession } from "./_lib/mvpAuth";
 
 export default function AppIndexPage() {
   const router = useRouter();
@@ -11,17 +11,6 @@ export default function AppIndexPage() {
     const session = getSession();
     if (!session) {
       router.replace("/app/login");
-      return;
-    }
-
-    const user = getUser(session.email);
-    if (!user) {
-      router.replace("/app/login");
-      return;
-    }
-
-    if (!user.onboarding?.completed) {
-      router.replace("/app/setup");
       return;
     }
 
