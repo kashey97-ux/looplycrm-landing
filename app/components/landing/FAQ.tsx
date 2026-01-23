@@ -1,33 +1,44 @@
-const FAQS = [
+import type { ReactNode } from "react";
+
+const FAQS: Array<{ q: string; a: ReactNode }> = [
   {
     q: "Why message the lead?",
     a: "To speed up first contact. Short, polite nudges help the lead reply or pick a time while the rep is busy.",
   },
   {
-    q: "Will this annoy people?",
-    a: "No. Auto-Stop ends all messages when an outcome is set, plus quiet hours and rate limits keep it respectful.",
+    q: "Is this spam?",
+    a: "No. Messages are brief, opt-out is always included, and Auto-Stop ends everything when an outcome is set.",
   },
   {
     q: "How do I stop messages?",
-    a: "Set an outcome (CONTACTED / BOOKED / LOST / OPTED_OUT). Everything stops instantly for the lead and the rep.",
+    a: (
+      <>
+        Reply STOP or set an outcome (CONTACTED / BOOKED / LOST / OPTED_OUT). Everything stops instantly. Manage this in{" "}
+        <a href="/app/login" style={{ textDecoration: "underline" }}>the app</a>.
+      </>
+    ),
   },
   {
-    q: "How are replies detected?",
-    a: "Replies are captured in the connected channel and shown in the timeline. You can mark the outcome right away.",
+    q: "How do inbound replies work?",
+    a: "Replies are captured from the connected channel and shown in the lead timeline so you can respond and set the outcome.",
   },
   {
-    q: "What if I already have a CRM?",
-    a: "Looply works alongside your CRM. It handles the first-contact window and Auto-Stop, without replacing your stack.",
+    q: "Can I use my CRM?",
+    a: "Yes. Looply runs alongside your CRM to manage first-contact speed and Auto-Stop without replacing your stack.",
   },
   {
     q: "Which channels are supported?",
     a: "Email is supported. SMS can be enabled via integrations such as Twilio.",
   },
   {
-    q: "Quiet hours and rate limits?",
-    a: "Yes. You can set quiet hours and pacing so messages never feel pushy.",
+    q: "What happens if the lead replies STOP?",
+    a: "Looply marks OPTED_OUT and stops all lead messages and reminders immediately.",
   },
-] as const;
+  {
+    q: "Do you support quiet hours?",
+    a: "Yes. Configure quiet hours and pacing so outreach is always respectful.",
+  },
+];
 
 export default function FAQ() {
   return (

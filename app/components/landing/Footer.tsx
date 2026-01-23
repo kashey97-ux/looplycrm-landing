@@ -30,7 +30,7 @@ export default function Footer() {
 
         <div className="btnRow" style={{ marginTop: 12 }}>
           <a className="button" href="/app/login">Log in</a>
-          <a className="button primary" href="/app/signup">Start trial</a>
+          <a className="button primary" href="/app/signup?plan=starter">Start trial</a>
         </div>
       </section>
 

@@ -149,23 +149,12 @@ export default function DashboardClient() {
         setKeyError("Please log in again to create an API key.");
         return;
       }
-      const res = await fetch("/api/keys/create", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-      const json = (await res.json()) as any;
-      if (!res.ok || json?.ok === false) {
-        const message =
-          json?.message ||
-          json?.error ||
-          (res.status === 500 ? "Engine API is not configured. Set ENGINE_API_URL." : "Failed to create API key.");
-        setKeyError(String(message));
+      const r = await engineFetch<{ apiKey?: string }>("/v1/api-keys", { method: "POST", json: {} });
+      if (r.ok === false) {
+        setKeyError(r.error.message || "Failed to create API key.");
         return;
       }
-      const key = String(json?.apiKey || "");
+      const key = String((r.data as any)?.apiKey || "");
       if (key) setCreatedKeyOnce(key);
       const refreshed = await engineFetch<EngineApiKeyList>("/v1/api-keys");
       if (refreshed.ok) setApiKeys(refreshed.data);
@@ -211,8 +200,24 @@ export default function DashboardClient() {
           </div>
           <div className="btnRow">
             <Button variant="primary" href="/app/leads/new">Add lead manually</Button>
-            <Button href="/app/integrations/website">Website docs</Button>
-            <Button href="/app/integrations/twilio">Twilio</Button>
+            <Button
+              href="/app/integrations/website"
+              className={!engineConfigured ? "isDisabled" : undefined}
+              aria-disabled={!engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+              onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+            >
+              Website docs
+            </Button>
+            <Button
+              href="/app/integrations/twilio"
+              className={!engineConfigured ? "isDisabled" : undefined}
+              aria-disabled={!engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+              onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+            >
+              Twilio
+            </Button>
             <Button onClick={onLogout} type="button">Logout</Button>
           </div>
         </div>
@@ -220,10 +225,10 @@ export default function DashboardClient() {
 
       {!engineConfigured ? (
         <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
-          <p className="kicker">Engine is not configured</p>
+          <p className="kicker">Engine is not connected</p>
           <p className="p" style={{ marginTop: 10 }}>
-            Set <strong style={{ color: "rgba(255,255,255,0.92)" }}>ENGINE_API_URL</strong> (server) and{" "}
-            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> (client).
+            Engine is not connected. Set{" "}
+            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> in Vercel env and redeploy.
           </p>
           <div className="btnRow" style={{ marginTop: 12 }}>
             <Button href="/app/integrations/website">Website docs</Button>
@@ -268,7 +273,13 @@ export default function DashboardClient() {
             </div>
             <div className="checklistStatus">{hasApiKey ? "Done" : "Not done"}</div>
             <div className="checklistActions">
-              <Button variant="primary" type="button" onClick={onCreateApiKey} disabled={creatingKey || hasApiKey}>
+              <Button
+                variant="primary"
+                type="button"
+                onClick={onCreateApiKey}
+                disabled={creatingKey || hasApiKey || !engineConfigured}
+                title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+              >
                 {creatingKey ? "Creating…" : "Create API key"}
               </Button>
             </div>
@@ -280,7 +291,15 @@ export default function DashboardClient() {
             </div>
             <div className="checklistStatus">{hasWebhook ? "Done" : "Not done"}</div>
             <div className="checklistActions">
-              <Button href="/app/settings/webhooks">View webhook</Button>
+              <Button
+                href="/app/settings/webhooks"
+                className={!engineConfigured ? "isDisabled" : undefined}
+                aria-disabled={!engineConfigured}
+                title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+                onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+              >
+                View webhook
+              </Button>
             </div>
           </div>
           <div className="checklistRow">
@@ -290,7 +309,15 @@ export default function DashboardClient() {
             </div>
             <div className="checklistStatus">{hasTestLead ? "Done" : "Not done"}</div>
             <div className="checklistActions">
-              <Button href="/app/integrations/website">Run test</Button>
+              <Button
+                href="/app/integrations/website"
+                className={!engineConfigured ? "isDisabled" : undefined}
+                aria-disabled={!engineConfigured}
+                title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+                onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+              >
+                Run test
+              </Button>
             </div>
           </div>
           <div className="checklistRow">
@@ -300,7 +327,15 @@ export default function DashboardClient() {
             </div>
             <div className="checklistStatus">{hasOutboundChannel ? "Done" : "Not done"}</div>
             <div className="checklistActions">
-              <Button href="/app/integrations/twilio">Configure channel</Button>
+              <Button
+                href="/app/integrations/twilio"
+                className={!engineConfigured ? "isDisabled" : undefined}
+                aria-disabled={!engineConfigured}
+                title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+                onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+              >
+                Configure channel
+              </Button>
             </div>
           </div>
           <div className="checklistRow">
@@ -336,10 +371,24 @@ export default function DashboardClient() {
             </pre>
           </div>
           <div className="btnRow" style={{ marginTop: 12 }}>
-            <Button variant="primary" type="button" onClick={onCreateApiKey} disabled={creatingKey}>
+            <Button
+              variant="primary"
+              type="button"
+              onClick={onCreateApiKey}
+              disabled={creatingKey || !engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+            >
               {creatingKey ? "Creating…" : "Create API key"}
             </Button>
-            <Button href="/app/settings/api-keys">Manage keys</Button>
+            <Button
+              href="/app/settings/api-keys"
+              className={!engineConfigured ? "isDisabled" : undefined}
+              aria-disabled={!engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+              onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+            >
+              Manage keys
+            </Button>
           </div>
           {keyError ? (
             <p className="small" style={{ marginTop: 10, color: "rgba(255,150,150,0.92)" }}>
@@ -373,7 +422,7 @@ export default function DashboardClient() {
                   <th style={{ padding: "8px 6px" }}>Email</th>
                   <th style={{ padding: "8px 6px" }}>Status</th>
                   <th style={{ padding: "8px 6px" }}>Created</th>
-                  <th className="actionsCol" style={{ padding: "8px 6px" }}>Actions</th>
+                  <th className="actionsCol actionsSticky" style={{ padding: "8px 6px" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -387,7 +436,7 @@ export default function DashboardClient() {
                     <td style={{ padding: "10px 6px", color: "rgba(255,255,255,0.70)" }}>{l.email}</td>
                     <td style={{ padding: "10px 6px", color: "rgba(255,255,255,0.70)" }}>{l.status}</td>
                     <td style={{ padding: "10px 6px", color: "rgba(255,255,255,0.70)" }}>{formatDate(l.createdAt)}</td>
-                    <td className="actionsCol" style={{ padding: "10px 6px" }}>
+                    <td className="actionsCol actionsSticky" style={{ padding: "10px 6px" }}>
                       <div className="tableActionsRow">
                         <Button href={`/app/leads/${encodeURIComponent(l.id)}`}>Open</Button>
                         <Button href={`/app/leads/${encodeURIComponent(l.id)}`}>Outcome</Button>

@@ -171,6 +171,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 .pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -182,6 +185,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 900px) {
+  .pricingGrid { grid-template-columns: 1fr; }
   .pricingGrid2 { grid-template-columns: 1fr; }
 }
 
@@ -267,8 +271,16 @@ a { color: inherit; text-decoration: none; }
 
 .tableWrap { overflow-x: auto; }
 .dataTable { width: 100%; border-collapse: collapse; min-width: 720px; }
-.actionsCol { min-width: 240px; white-space: nowrap; }
-.tableActionsRow { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+.actionsCol { min-width: 160px; width: 160px; white-space: nowrap; text-align: center; }
+.actionsSticky {
+  position: sticky;
+  right: 0;
+  background: var(--card);
+  box-shadow: -1px 0 0 var(--border);
+}
+.dataTable thead .actionsSticky { z-index: 2; }
+.dataTable tbody .actionsSticky { z-index: 1; }
+.tableActionsRow { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; justify-content: center; }
 .tableActionsMenu { display: none; position: relative; }
 .tableActionsMenu summary { list-style: none; cursor: pointer; }
 .tableActionsMenu summary::-webkit-details-marker { display: none; }
@@ -306,6 +318,12 @@ a { color: inherit; text-decoration: none; }
   white-space: nowrap;
 }
 .checklistActions { display: flex; justify-content: flex-end; }
+
+.button.isDisabled,
+.button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 @media (max-width: 900px) {
   .dataTable { min-width: 640px; }

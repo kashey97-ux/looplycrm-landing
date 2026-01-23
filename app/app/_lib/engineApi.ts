@@ -1,3 +1,4 @@
+import { getSession } from "./mvpAuth";
 export type EngineErrorCode =
   | "engine_not_configured"
   | "network_error"
@@ -11,7 +12,8 @@ export type EngineResult<T> =
   | { ok: false; status: number; error: { code: EngineErrorCode; message: string; details?: any } };
 
 function getEngineBaseUrl() {
-  return "/api/engine";
+  const base = (process.env.NEXT_PUBLIC_ENGINE_API_URL || "").trim();
+  return base.replace(/\/+$/, "");
 }
 
 async function parseJsonSafe(res: Response) {
@@ -27,8 +29,26 @@ export async function engineFetch<T>(
   init?: RequestInit & { json?: any },
 ): Promise<EngineResult<T>> {
   const base = getEngineBaseUrl();
+  if (!base) {
+    return {
+      ok: false,
+      status: 0,
+      error: {
+        code: "engine_not_configured",
+        message: "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy.",
+      },
+    };
+  }
   const headers = new Headers(init?.headers || {});
   headers.set("accept", "application/json");
+  const session = (() => {
+    try {
+      return getSession() as any;
+    } catch {
+      return null;
+    }
+  })();
+  if (session?.token) headers.set("authorization", `Bearer ${session.token}`);
 
   let body: BodyInit | undefined = init?.body as any;
   if (Object.prototype.hasOwnProperty.call(init || {}, "json")) {

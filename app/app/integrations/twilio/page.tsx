@@ -29,6 +29,7 @@ export default function TwilioIntegrationsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const engineConfigured = Boolean(process.env.NEXT_PUBLIC_ENGINE_API_URL);
 
   useEffect(() => {
     if (!ownerEmail) {
@@ -102,11 +103,12 @@ export default function TwilioIntegrationsPage() {
         </div>
       </div>
 
-      {!process.env.NEXT_PUBLIC_ENGINE_API_URL ? (
+      {!engineConfigured ? (
         <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
-          <p className="kicker">Engine is not configured</p>
+          <p className="kicker">Engine is not connected</p>
           <p className="p" style={{ marginTop: 10 }}>
-            Set <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> to enable Twilio integration.
+            Engine is not connected. Set{" "}
+            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> in Vercel env and redeploy.
           </p>
         </div>
       ) : null}
@@ -175,7 +177,7 @@ export default function TwilioIntegrationsPage() {
               id="account_sid"
               value={twilio.account_sid || ""}
               onChange={(e) => setTwilio((prev) => ({ ...prev, account_sid: e.target.value }))}
-              disabled={loading || saving || !twilioAllowed}
+              disabled={loading || saving || !twilioAllowed || !engineConfigured}
               placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
             />
           </div>
@@ -187,7 +189,7 @@ export default function TwilioIntegrationsPage() {
               type="password"
               value={twilio.auth_token || ""}
               onChange={(e) => setTwilio((prev) => ({ ...prev, auth_token: e.target.value }))}
-              disabled={loading || saving || !twilioAllowed}
+              disabled={loading || saving || !twilioAllowed || !engineConfigured}
               placeholder="Your Twilio Auth Token"
             />
           </div>
@@ -198,7 +200,7 @@ export default function TwilioIntegrationsPage() {
               id="from_number"
               value={twilio.from_number || ""}
               onChange={(e) => setTwilio((prev) => ({ ...prev, from_number: e.target.value }))}
-              disabled={loading || saving || !twilioAllowed}
+              disabled={loading || saving || !twilioAllowed || !engineConfigured}
               placeholder="+15551234567"
             />
           </div>
@@ -207,7 +209,8 @@ export default function TwilioIntegrationsPage() {
             <Button
               variant="primary"
               type="submit"
-              disabled={loading || saving || !twilioAllowed}
+              disabled={loading || saving || !twilioAllowed || !engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
             >
               {saving ? "Saving…" : "Save Twilio settings"}
             </Button>

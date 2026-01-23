@@ -79,23 +79,16 @@ export default function ApiKeysClient() {
         setError("Please log in again to create an API key.");
         return;
       }
-      const res = await fetch("/api/keys/create", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-      const json = (await res.json()) as any;
-      if (!res.ok || json?.ok === false) {
-        const message =
-          json?.message ||
-          json?.error ||
-          (res.status === 500 ? "Engine API is not configured. Set ENGINE_API_URL." : "Failed to create API key.");
-        setError(String(message));
+      const r = await engineFetch<{ apiKey?: string; id?: string; prefix?: string }>("/v1/api-keys", { method: "POST", json: {} });
+      if (r.ok === false) {
+        setError(r.error.message || "Failed to create API key.");
         return;
       }
-      setCreatedKey({ id: String(json?.id || ""), apiKey: String(json?.apiKey || ""), prefix: String(json?.prefix || "") });
+      setCreatedKey({
+        id: String((r.data as any)?.id || ""),
+        apiKey: String((r.data as any)?.apiKey || ""),
+        prefix: String((r.data as any)?.prefix || ""),
+      });
       const next = await engineFetch<EngineApiKeyList>("/v1/api-keys");
       if (next.ok) {
         const list = Array.isArray(next.data?.items) ? next.data.items : [];
@@ -159,7 +152,15 @@ export default function ApiKeysClient() {
             <p className="small dashboardSubtitle">Use an API key to send leads into Looply via webhook.</p>
           </div>
           <div className="btnRow">
-            <Button href="/app/integrations/website">Website docs</Button>
+            <Button
+              href="/app/integrations/website"
+              className={!engineConfigured ? "isDisabled" : undefined}
+              aria-disabled={!engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+              onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+            >
+              Website docs
+            </Button>
             <Button href="/app/dashboard">Back</Button>
           </div>
         </div>
@@ -167,10 +168,10 @@ export default function ApiKeysClient() {
 
       {!engineConfigured ? (
         <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
-          <p className="kicker">Engine is not configured</p>
+          <p className="kicker">Engine is not connected</p>
           <p className="p" style={{ marginTop: 10 }}>
-            Set <strong style={{ color: "rgba(255,255,255,0.92)" }}>ENGINE_API_URL</strong> and{" "}
-            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong>.
+            Engine is not connected. Set{" "}
+            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> in Vercel env and redeploy.
           </p>
         </div>
       ) : null}
@@ -195,7 +196,13 @@ export default function ApiKeysClient() {
             <p className="small dashboardSubtitle">Owner: {ownerEmail}</p>
           </div>
           <div className="btnRow">
-            <Button variant="primary" type="button" onClick={onCreate} disabled={loading}>
+            <Button
+              variant="primary"
+              type="button"
+              onClick={onCreate}
+              disabled={loading || !engineConfigured}
+              title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+            >
               {loading ? "Working…" : "Create key"}
             </Button>
           </div>
@@ -228,7 +235,12 @@ export default function ApiKeysClient() {
                     <td style={{ padding: "10px 6px", color: "rgba(255,255,255,0.70)" }}>{formatDate(k.createdAt)}</td>
                     <td style={{ padding: "10px 6px" }}>
                       <div className="btnRow">
-                        <Button type="button" onClick={() => onRevoke(k.id)} disabled={loading}>
+                        <Button
+                          type="button"
+                          onClick={() => onRevoke(k.id)}
+                          disabled={loading || !engineConfigured}
+                          title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+                        >
                           Revoke
                         </Button>
                       </div>

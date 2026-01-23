@@ -21,6 +21,7 @@ export default function WebsiteIntegrationsPage() {
   const [apiKeys, setApiKeys] = useState<EngineApiKeyList | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const engineConfigured = Boolean(process.env.NEXT_PUBLIC_ENGINE_API_URL);
 
   useEffect(() => {
     if (!ownerEmail) {
@@ -75,11 +76,12 @@ export default function WebsiteIntegrationsPage() {
         </div>
       </div>
 
-      {!process.env.NEXT_PUBLIC_ENGINE_API_URL ? (
+      {!engineConfigured ? (
         <div className="card section" style={{ borderColor: "rgba(255,255,255,0.22)" }}>
-          <p className="kicker">Engine is not configured</p>
+          <p className="kicker">Engine is not connected</p>
           <p className="p" style={{ marginTop: 10 }}>
-            Set <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> to enable live examples.
+            Engine is not connected. Set{" "}
+            <strong style={{ color: "rgba(255,255,255,0.92)" }}>NEXT_PUBLIC_ENGINE_API_URL</strong> in Vercel env and redeploy.
           </p>
         </div>
       ) : null}
@@ -204,7 +206,15 @@ export default function WebsiteIntegrationsPage() {
 
       <div className="section btnRow">
         <Button href="/app/dashboard">Back to dashboard</Button>
-        <Button href="/app/settings/api-keys">API keys</Button>
+        <Button
+          href="/app/settings/api-keys"
+          className={!engineConfigured ? "isDisabled" : undefined}
+          aria-disabled={!engineConfigured}
+          title={!engineConfigured ? "Engine is not connected. Set NEXT_PUBLIC_ENGINE_API_URL in Vercel env and redeploy." : undefined}
+          onClick={!engineConfigured ? (e) => e.preventDefault() : undefined}
+        >
+          API keys
+        </Button>
       </div>
     </div>
   );
