@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 const FAQS: Array<{ q: string; a: ReactNode }> = [
   {
-    q: "Why message the lead?",
+    q: "Why do you message the lead?",
     a: "To speed up first contact. Short, polite nudges help the lead reply or pick a time while the rep is busy.",
   },
   {
@@ -19,24 +19,20 @@ const FAQS: Array<{ q: string; a: ReactNode }> = [
     ),
   },
   {
-    q: "How do inbound replies work?",
+    q: "How do replies work?",
     a: "Replies are captured from the connected channel and shown in the lead timeline so you can respond and set the outcome.",
   },
   {
-    q: "Can I use my CRM?",
+    q: "Can I keep my CRM?",
     a: "Yes. Looply runs alongside your CRM to manage first-contact speed and Auto-Stop without replacing your stack.",
   },
   {
     q: "Which channels are supported?",
-    a: "Email is supported. SMS can be enabled via integrations such as Twilio.",
-  },
-  {
-    q: "What happens if the lead replies STOP?",
-    a: "Looply marks OPTED_OUT and stops all lead messages and reminders immediately.",
+    a: "Starter includes email. Pro adds SMS and testing options.",
   },
   {
     q: "Do you support quiet hours?",
-    a: "Yes. Configure quiet hours and pacing so outreach is always respectful.",
+    a: "Yes. Configure timing so outreach is always respectful.",
   },
 ];
 

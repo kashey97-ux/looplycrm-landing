@@ -15,7 +15,7 @@ export default function HowItWorks() {
         </div>
         <div className="card">
           <p className="kicker">3) Lead nudged</p>
-          <p className="p">“We tried calling you — pick a time?”</p>
+          <p className="p">"We tried calling you - pick a time?"</p>
         </div>
         <div className="card">
           <p className="kicker">4) Outcome set</p>

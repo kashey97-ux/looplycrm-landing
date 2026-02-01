@@ -8,9 +8,9 @@ const OUTCOMES = [
 export default function OutcomesStop() {
   return (
     <section id="outcomes" className="card section">
-      <p className="kicker">Outcomes that stop everything</p>
-      <h2 className="h2" style={{ marginTop: 10 }}>One outcome ends all follow-ups and reminders</h2>
-      <p className="p">No more lead messages. No more reminders.</p>
+      <p className="kicker">Outcomes (Auto-Stop)</p>
+      <h2 className="h2" style={{ marginTop: 10 }}>Set one outcome and all follow-ups stop</h2>
+      <p className="p">Auto-Stop keeps lead messages and sales reminders clean.</p>
 
       <div className="grid4" style={{ marginTop: 12 }}>
         {OUTCOMES.map((o) => (

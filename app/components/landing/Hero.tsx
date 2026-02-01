@@ -2,18 +2,19 @@ export default function Hero() {
   return (
     <section className="hero" id="top">
       <div className="card">
-        <p className="kicker">Sales-first inbound conversion</p>
-        <h1 className="h1">First-contact conversion with Auto-Stop.</h1>
+        <p className="kicker">First-contact conversion</p>
+        <h1 className="h1">Reach inbound leads faster, then stop on outcome.</h1>
         <p className="sub">
-          Looply helps sales reps respond faster with reminders, inbound replies, and instant stop when an outcome is set.
+          Looply is a focused system for owner-operators and small sales teams in home services. It keeps first contact
+          tight and ends follow-ups the moment an outcome is set.
         </p>
 
         <div className="btnRow" style={{ marginTop: 16 }}>
-          <a className="button primary" href="#demo">Get a demo</a>
-          <a className="button" href="/app/signup?plan=starter">Start trial</a>
+          <a className="button primary" href="/app/signup?plan=starter">Start trial</a>
+          <a className="button" href="#how">See how it works</a>
         </div>
         <p className="small" style={{ marginTop: 10 }}>
-          Stop instantly when an outcome is set. No spam.
+          Respectful, sales-first follow-ups. Auto-Stop keeps it clean.
         </p>
       </div>
     </section>
